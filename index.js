@@ -1,5 +1,6 @@
 const express = require("express");
 const session = require("express-session");
+const bodyparser = require("body-parser");
 const MongoStore = require("connect-mongo");
 const mongoose = require("mongoose");
 require('dotenv').config();
@@ -7,6 +8,9 @@ require('dotenv').config();
 const passport = require("./passport/setup");
 const auth = require("./routes/auth");
 const home = require("./routes/home");
+const accepted = require("./routes/accepted");
+const done = require("./routes/done");
+
 const app = express();
 const port = 5000;
 
@@ -18,8 +22,8 @@ mongoose.connect(MONGO_URI)
     .then(console.log("successfully connected!"))
     .catch(err => console.log(err));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: false }));
 
 // Express Session
 app.use(
@@ -37,7 +41,9 @@ app.use(passport.session());
 
 // routes
 app.use("/api/auth", auth);
-app.use("/api", home);
+app.use("/api/main", home);
+app.use("/api/accepted", accepted);
+app.use("/api/done", done);
 
 app.listen(port, () => {
     console.log(

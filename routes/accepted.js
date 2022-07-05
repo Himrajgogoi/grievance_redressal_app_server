@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const { ensureAuthenticated } = require("../config/authenticate");
-const Issues = require("../models/Issues")
+
+const Accepted = require("../models/Accepted")
 
 router.get("/", (req, res) => {
-    Issues.find({}).then(issues => res.status(200).json({ issues: issues }));
+    Accepted.find({}).then(issues => res.status(200).json({ accepted: issues }));
 })
 
 

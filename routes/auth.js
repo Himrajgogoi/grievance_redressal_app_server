@@ -52,9 +52,13 @@ router.post('/register', (req, res) => {
 
 // logging out the user
 router.get("/logout", (req, res) => {
+
     req.logout((err) => {
         if (err) res.status(400).json({ error: err });
-        res.status(200).json({ status: "You are logged out !" });
+        req.session.destroy(err => {
+            if (err) res.status(400).json({ error: err });
+            res.status(200).json({ status: "You are logged out !" });
+        });
     })
 })
 
