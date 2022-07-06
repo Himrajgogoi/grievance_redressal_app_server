@@ -29,7 +29,7 @@ app.use(bodyparser.urlencoded({ extended: false }));
 // Express Session
 app.use(
     session({
-        secret: process.env.SESSION_SECRET,
+        secret: process.env.SESSION,
         resave: false,
         saveUninitilized: true,
         store: new MongoStore({ mongoUrl: MONGO_URI })
