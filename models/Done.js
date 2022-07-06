@@ -32,7 +32,7 @@ const DoneSchema = mongoose.Schema({
     availability_time: {
         type: String,
     },
-    estimated_time: {
+    time_of_completion: {
         type: Date,
         required: true
     },
