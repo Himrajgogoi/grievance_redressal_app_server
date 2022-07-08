@@ -1,22 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 require('dotenv').config()
 
 const { ensureAuthenticated, isAdmin } = require("../config/authenticate");
 const Issues = require("../models/Issues")
 
 // fetching the posted issues
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
 
     // if a user is authenticated, data is fetched according to their department
-    if (req.isAuthenticated() && req.user.admin == null) {
-        Issues.aggregate([{ $match: { department: req.user.department } }]).then(issues => res.status(200).json({ issues: issues }))
-            .catch(err => res.status(400).json({ error: err.message }));
+    if (req.headers.authorization) {
+        passport.authenticate("jwt", { session: false }, (err, user, info) => {
+
+            // not authenticated
+            if (err) {
+                res.status(400).json({ error: err.message })
+            } else if (user) {
+                // authenticated but not admin
+                if (!user.admin) {
+                    Issues.aggregate([{ $match: { department: user.department } }]).then(issues => res.status(200).json({ issues: issues }))
+                        .catch(err => res.status(400).json({ error: err.message }));
+                }
+                //admin
+                else {
+                    Issues.find({}).then(issues => res.status(200).json({ issues: issues }))
+                        .catch(err => res.status(400).json({ error: err.message }));
+                }
+            }
+
+        })(req, res, next);
     } else {
         Issues.find({}).then(issues => res.status(200).json({ issues: issues }))
             .catch(err => res.status(400).json({ error: err.message }));
     }
+
 })
 
 // posting new issues

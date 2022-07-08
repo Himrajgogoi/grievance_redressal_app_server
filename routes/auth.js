@@ -2,7 +2,9 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+require('dotenv').config();
 
 // for login
 router.post("/login", (req, res, next) => {
@@ -11,11 +13,13 @@ router.post("/login", (req, res, next) => {
             return res.status(400).json({ errors: err });
         }
 
-        req.logIn(user, (err) => {
+        req.logIn(user, { session: false }, (err) => {
             if (err) {
                 return res.status(400).json({ errors: err });
             }
-            return res.status(200).json({ status: `logged in ${user.email}` });
+            // const body = { _id: user._id, email: user.email, department: user.department };
+            const token = jwt.sign({ user: user }, process.env.TOKEN, { expiresIn: 3600 });
+            return res.status(200).json({ status: `logged in ${user.email}`, token: token });
         });
     })(req, res, next);
 })
@@ -56,13 +60,8 @@ router.post('/register', (req, res) => {
 // logging out the user
 router.get("/logout", (req, res) => {
 
-    req.logout((err) => {
-        if (err) res.status(400).json({ error: err });
-        req.session.destroy(err => {
-            if (err) res.status(400).json({ error: err });
-            res.status(200).json({ status: "You are logged out !" });
-        });
-    })
+    delete req.user;
+    res.status(200).json({ status: "logged out" })
 })
 
 module.exports = router;

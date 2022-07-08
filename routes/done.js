@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 require('dotenv').config()
 
 const { ensureAuthenticated, isAdmin } = require("../config/authenticate");
@@ -9,15 +10,34 @@ const Done = require("../models/Done")
 const Accepted = require("../models/Accepted")
 
 // fetching the done issues
-router.get("/", (req, res) => {
+router.get("/", (req, res, next) => {
+
     // if a user is authenticated, data is fetched according to their department
-    if (req.isAuthenticated() && req.user.admin == null) {
-        Done.aggregate([{ $match: { department: req.user.department } }]).then(issues => res.status(200).json({ done: issues }))
-            .catch(err => res.status(400).json({ error: err.message }));
+    if (req.headers.authorization) {
+        passport.authenticate("jwt", { session: false }, (err, user, info) => {
+
+            // not authenticated
+            if (err) {
+                res.status(400).json({ error: err.message })
+            } else if (user) {
+                // authenticated but not admin
+                if (!user.admin) {
+                    Done.aggregate([{ $match: { department: user.department } }]).then(issues => res.status(200).json({ done: issues }))
+                        .catch(err => res.status(400).json({ error: err.message }));
+                }
+                //admin
+                else {
+                    Done.find({}).then(issues => res.status(200).json({ done: issues }))
+                        .catch(err => res.status(400).json({ error: err.message }));
+                }
+            }
+
+        })(req, res, next);
     } else {
         Done.find({}).then(issues => res.status(200).json({ done: issues }))
             .catch(err => res.status(400).json({ error: err.message }));
     }
+
 })
 
 // posting the done issue
@@ -58,7 +78,7 @@ router.post("/", ensureAuthenticated, (req, res) => {
 })
 
 // deleting of issue by admin
-router.put("/", isAdmin, (req, res) => {
+router.put("/", ensureAuthenticated, isAdmin, (req, res) => {
     Done.findByIdAndDelete(req.body.id).then(respose => res.status(200).json({ status: "deleted" }))
         .catch(err => res.status(400).json({ error: err.message }));
 })

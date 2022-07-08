@@ -26,19 +26,19 @@ mongoose.connect(MONGO_URI)
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 
-// Express Session
-app.use(
-    session({
-        secret: process.env.SESSION,
-        resave: false,
-        saveUninitilized: true,
-        store: new MongoStore({ mongoUrl: MONGO_URI })
-    })
-);
+// // Express Session
+// app.use(
+//     session({
+//         secret: process.env.SESSION,
+//         resave: false,
+//         saveUninitilized: false,
+//         store: new MongoStore({ mongoUrl: MONGO_URI })
+//     })
+// );
 
 // passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 
 

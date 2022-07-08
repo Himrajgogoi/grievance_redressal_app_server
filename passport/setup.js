@@ -2,6 +2,10 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+var JwtStrategy = require("passport-jwt").Strategy;
+var ExtractJwt = require("passport-jwt").ExtractJwt;
+
+require('dotenv').config();
 
 // serializing the user
 passport.serializeUser((user, done) => {
@@ -44,6 +48,23 @@ passport.use(
                 done(err)
             })
     })
+);
+
+
+// JWT Strategy
+passport.use(
+    new JwtStrategy({
+            secretOrKey: process.env.TOKEN,
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+        },
+        async(token, done) => {
+            try {
+                return done(null, token.user);
+            } catch (error) {
+                done(error);
+            }
+        }
+    )
 );
 
 module.exports = passport;
