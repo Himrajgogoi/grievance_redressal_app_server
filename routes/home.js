@@ -20,19 +20,19 @@ router.get("/", (req, res, next) => {
             } else if (user) {
                 // authenticated but not admin
                 if (!user.admin) {
-                    Issues.aggregate([{ $match: { department: user.department } }]).then(issues => res.status(200).json({ issues: issues }))
+                    Issues.aggregate([{ $match: { department: user.department } },{ $sort:{when:-1} }]).then(issues => res.status(200).json({ issues: issues }))
                         .catch(err => res.status(400).json({ error: err.message }));
                 }
                 //admin
                 else {
-                    Issues.find({}).then(issues => res.status(200).json({ issues: issues }))
+                    Issues.find({}).sort({"when":-1}).then(issues => res.status(200).json({ issues: issues }))
                         .catch(err => res.status(400).json({ error: err.message }));
                 }
             }
 
         })(req, res, next);
     } else {
-        Issues.find({}).then(issues => res.status(200).json({ issues: issues }))
+        Issues.find({}).sort({"when":-1}).then(issues => res.status(200).json({ issues: issues }))
             .catch(err => res.status(400).json({ error: err.message }));
     }
 
