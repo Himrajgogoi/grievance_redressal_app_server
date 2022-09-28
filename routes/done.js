@@ -58,12 +58,12 @@ router.post("/", ensureAuthenticated, (req, res) => {
             var transporter = nodemailer.createTransport({
                 service:'SendinBlue',
                 auth: {
-                    user: process.env.SENDINBLUE_USER, 
+                    user: "grievance.redressal.app.jec@gmail.com", 
                     pass: process.env.SENDINBLUE_PASSWORD //generated on SendInBlue
                 }
             });
             transporter.sendMail({
-                from: process.env.SENDINBLUE_USER, // sender address
+                from: "grievance.redressal.app.jec@gmail.com", // sender address
                 to: req.body.email, // list of receivers
                 subject: subject, // Subject line
                 html: `<div><h3>Hi,</h3><p>We hope you are doing well.</p><p>We have completed your issue with the following details:</p><p>${mail_content} | Time of completion: ${req.body.time_of_completion}</p></div>` // plain text body // html body
