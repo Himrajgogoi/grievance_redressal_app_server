@@ -66,7 +66,22 @@ router.post("/", ensureAuthenticated, (req, res) => {
                 from: "grievance.redressal.app.jec@gmail.com", // sender address
                 to: req.body.email, // list of receivers
                 subject: subject, // Subject line
-                html: `<div><h3>Hi,</h3><p>We hope you are doing well.</p><p>We have completed your issue with the following details:</p><p>${mail_content} | Time of completion: ${req.body.time_of_completion}</p></div>` // plain text body // html body
+                html: `<div>
+                <h3>Hi,</h3>
+                <p>We hope you are doing well.</p>
+                <p>We have completed your issue with the following details:</p>
+                <p>
+                Name of the griever: ${req.body.name}<br>
+                Email of the griever:  ${req.body.email}<br>
+                Phone number: ${req.body.phone}<br>
+                Description of the issue: ${req.body.description}<br>
+                Jurisdiction Department: <strong>${req.body.department_name}</strong><br>
+                Location: ${req.body.where}<br>
+                Posted on: ${req.body.when}<br>
+               </p>
+                <p>Completion details: ${mail_content}<br>
+                Time of completion: ${req.body.time_of_completion}<br>
+                </p></div>` // plain text body // html body
             }, (err, info) => {
                 if (err) res.status(400).json({ error: err });
                 else res.status(200).json({ status: "task completed and mail sent!" })

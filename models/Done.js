@@ -17,6 +17,10 @@ const DoneSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    department_name:{
+        type: String,
+        required: true
+    },
     where: {
         type: String,
         required: true
