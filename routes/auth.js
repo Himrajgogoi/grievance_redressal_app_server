@@ -19,7 +19,7 @@ router.post("/login", (req, res, next) => {
                 return res.status(400).json({ errors: err });
             }
             // const body = { _id: user._id, email: user.email, department: user.department };
-            const token = jwt.sign({ user: user }, process.env.TOKEN, { expiresIn: 3600 });
+            const token = jwt.sign({ user: user }, process.env.TOKEN, { expiresIn: "1d" });
             return res.status(200).json({ status: `logged in ${user.email}`, token: token, department: user.department, admin:user.admin });
         });
     })(req, res, next);
