@@ -4,6 +4,7 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { ensureAuthenticated, isAdmin } = require("../config/authenticate");
 require('dotenv').config();
 
 // for login
@@ -56,6 +57,21 @@ router.post('/register', (req, res) => {
             })
     }
 })
+
+// get all department admins only by the root admin
+router.get("/admins", ensureAuthenticated, isAdmin,(req, res) => {
+    User.find({})
+      .then((response) => res.status(200).json({ admins: response }))
+      .catch((err) => res.status(400).json({ error: err.message }));
+});
+
+// deleting the department admin by admin
+router.post("/delete", ensureAuthenticated, isAdmin,(req, res) => {
+    User.findByIdAndDelete(req.body.id)
+      .then((respose) => res.status(200).json({ status: "deleted department admin" }))
+      .catch((err) => res.status(400).json({ error: err.message }));
+  });
+
 
 // logging out the user
 router.get("/logout", (req, res) => {
