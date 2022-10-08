@@ -65,7 +65,7 @@ router.get("/admins", ensureAuthenticated, isAdmin,(req, res) => {
       .catch((err) => res.status(400).json({ error: err.message }));
 });
 
-// deleting the department admin by admin
+// deleting the department admin by root admin
 router.post("/delete", ensureAuthenticated, isAdmin,(req, res) => {
     User.findByIdAndDelete(req.body.id)
       .then((respose) => res.status(200).json({ status: "deleted department admin" }))
@@ -73,7 +73,7 @@ router.post("/delete", ensureAuthenticated, isAdmin,(req, res) => {
   });
 
 
-// logging out the user
+// logging out the admin
 router.get("/logout", (req, res) => {
 
     delete req.user;

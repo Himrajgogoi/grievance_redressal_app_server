@@ -1,6 +1,6 @@
 const passport = require("passport");
 
-// for authenticating routes
+// middleware for authenticating routes
 module.exports = {
     ensureAuthenticated: passport.authenticate('jwt', { session: false }),
     isAdmin: (req, res, next) => {

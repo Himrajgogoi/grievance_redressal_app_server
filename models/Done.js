@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// defining the schema for the addressed grievances
 const DoneSchema = mongoose.Schema({
 
     name: {
